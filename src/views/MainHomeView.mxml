@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView">
+	<fx:Script>
+		<![CDATA[
+			import flash.filters.ColorMatrixFilter;
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<s:Button label="Open camera roll">
+		<s:click>
+			<![CDATA[
+				if (CameraRoll.supportsBrowseForImage)
+			    {
+					var cameraRoll:CameraRoll = new CameraRoll();
+					cameraRoll.addEventListener(MediaEvent.SELECT, function(event:MediaEvent):void {
+						image.filters = null;
+						image.source = event.data.file.url;
+					});	
+					cameraRoll.browseForImage();
+				}
+				else
+				{
+					info.text = "CameraRoll not supported";
+				}
+			]]>
+		</s:click>
+	</s:Button>
+	
+	<s:Button label="Snap photo">
+		<s:click>
+			<![CDATA[
+				if (CameraUI.isSupported)
+				{
+					var cameraUI:CameraUI = new CameraUI();
+					cameraUI.addEventListener(MediaEvent.COMPLETE, function(event:MediaEvent):void {
+						image.filters = null;
+						image.source = event.data.file.url;
+					});
+					cameraUI.addEventListener(ErrorEvent.ERROR, function(error:ErrorEvent):void {
+						trace("Error: " + error.text);
+						info.text = "Error: " + error.text;
+					});
+					cameraUI.launch(MediaType.IMAGE);
+				}
+				else
+				{
+					info.text = "CameraUI not supported";
+				}
+			]]>
+		</s:click>
+	</s:Button>
+	
+	<s:Button label="Apply filter">
+		<s:click>
+			<![CDATA[
+			    var matrix:Array = [0,1,0,0,0,
+			                        0,0,1,0,0,
+			                        1,0,0,0,0,
+			                        0,0,0,0,1]
+				var filter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
+				image.filters = [filter];
+			]]>
+		</s:click>
+	</s:Button>
+	
+	<s:Label id="info"/>
+	
+	<s:Image id="image" width="100%" height="100%" />
+</s:View>
