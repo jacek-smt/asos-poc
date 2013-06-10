@@ -245,7 +245,10 @@
 		in order to access AIR's SystemIdleMode APIs-->
 			    <!--<uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>-->
 			    <!--<uses-permission android:name="android.permission.WAKE_LOCK"/>-->
-			    <uses-permission android:name="android.permission.CAMERA"/>
+			    <uses-permission android:name="android.permission.CAMERA"/> 
+                <uses-feature android:name="android.hardware.camera" android:required="false"/> 
+                <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/> 
+                <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
 			    <!--<uses-permission android:name="android.permission.RECORD_AUDIO"/>-->
 			    <!--The ACCESS_NETWORK_STATE and ACCESS_WIFI_STATE permissions should be toggled
 		together in order to use AIR's NetworkInfo APIs-->

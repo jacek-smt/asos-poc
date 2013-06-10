@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
-		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView">
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:mx="library://ns.adobe.com/flex/mx" title="HomeView">
 	<fx:Script>
 		<![CDATA[
-			import flash.filters.ColorMatrixFilter;
-			import flash.filters.ConvolutionFilter;
+			import controllers.MainController;
 			
-			import mx.events.FlexEvent;
+			import models.PhotoFilters;
 		]]>
 	</fx:Script>
 	<fx:Declarations>
@@ -22,86 +22,26 @@
 			<s:TileLayout/>
 		</s:layout>
 		
-		<s:Button label="Open camera roll">
-			<s:click>
-				<![CDATA[
-					if (CameraRoll.supportsBrowseForImage)
-				    {
-						var cameraRoll:CameraRoll = new CameraRoll();
-						cameraRoll.addEventListener(MediaEvent.SELECT, function(event:MediaEvent):void {
-							image.filters = null;
-							image.source = event.data.file.url;
-						});
-				
-						cameraRoll.browseForImage();
-					}
-					else
-					{
-						info.text = "CameraRoll not supported";
-					}
-				]]>
-			</s:click>
-		</s:Button>
+		<s:Button label="Open camera roll" click="MainController.cameraRollClickHandler(image, info);" />
 		
-		<s:Button label="Snap photo">
-			<s:click>
-				<![CDATA[
-					if (CameraUI.isSupported)
-					{
-						var cameraUI:CameraUI = new CameraUI();
-						cameraUI.addEventListener(MediaEvent.COMPLETE, function(event:MediaEvent):void {
-							image.filters = null;
-							image.source = event.data.file.url;
-						});
-						cameraUI.addEventListener(ErrorEvent.ERROR, function(error:ErrorEvent):void {
-							trace("Error: " + error.text);
-							info.text = "Error: " + error.text;
-						});
-						cameraUI.launch(MediaType.IMAGE);
-					}
-					else
-					{
-						info.text = "CameraUI not supported";
-					}
-				]]>
-			</s:click>
-		</s:Button>
+		<s:Button label="Snap photo" click="MainController.cameraUIClickHandler(image, info);" />
 		
-		<s:Button label="Apply ColorMatrixFilter">
-			<s:click>
-				<![CDATA[
-				    var matrix:Array = [0,1,0,0,0,
-				                        0,0,1,0,0,
-				                        1,0,0,0,0,
-				                        0,0,0,1,0]
-					var filter:ColorMatrixFilter = new ColorMatrixFilter(matrix);
-					image.filters = [filter];
-				]]>
-			</s:click>
-		</s:Button>
+		<s:Button label="Apply ColorMatrixFilter" click="image.filters = cameraDisplay.filters = [PhotoFilters.colorMatrixFilter];" />
 		
-		<s:Button label="Apply ConvolutionFilter">
-			<s:click>
-				<![CDATA[
-				var matrix:Array = [0, 20, 0,
-				                    20, -80, 20,
-				                    0, 20, 0];
-				
-				var convolution:ConvolutionFilter = new ConvolutionFilter();
-				convolution.matrixX = 3;
-				convolution.matrixY = 3;
-				convolution.matrix = matrix;
-				convolution.divisor = 10;
-				
-				image.filters = [convolution];
-				]]>
-			</s:click>
-		</s:Button>
+		<s:Button label="Apply ConvolutionFilter" click="image.filters = cameraDisplay.filters = [PhotoFilters.convolutionFilter];" />
+		
+		<s:Button label="Clear filters" click="image.filters = cameraDisplay.filters = null;" />
+		
+		<s:Button label="Crop" click="MainController.cropClickHandler(image);" />
 	</s:Group>
 	
 	<s:Label id="info"/>
 	
-	<s:BorderContainer borderWeight="1" borderColor="black" width="100%" height="100%">
+	<s:Group width="100%" height="50%">
 		<s:Image id="image" width="100%" height="100%" />
-	</s:BorderContainer>
+	</s:Group>
+	
+	<s:Group id="cameraDisplay" width="100%" height="50%">
+		<mx:UIComponent id="uic" width="100%" height="100%" creationComplete="MainController.initCamera(uic);" />
+	</s:Group>
 </s:View>
